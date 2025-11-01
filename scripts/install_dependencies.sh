@@ -31,6 +31,7 @@ apt-get install -y -qq lsb-release \
                        doxygen \
                        graphviz \
                        rsync \
+                       clang-format \
                        gcovr
 
 ln -fs /usr/share/zoneinfo/$TZ /etc/localtime
