@@ -39,3 +39,14 @@ dpkg-reconfigure -f noninteractive tzdata
 apt-get clean
 apt-get autoclean
 apt-get autoremove
+
+git clone https://github.com/trusch/libbcrypt bcrypt
+cd bcrypt
+mkdir build
+cd build
+cmake ..
+make -j4
+make install
+ldconfig
+cd ../..
+rm bcrypt -Rf
