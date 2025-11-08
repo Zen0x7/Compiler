@@ -40,6 +40,14 @@ apt-get clean
 apt-get autoclean
 apt-get autoremove
 
+git clone https://github.com/laserpants/dotenv-cpp.git dotenv
+cd dotenv/build
+cmake ..
+make install
+ldconfig
+cd ../..
+rm dotenv -Rf
+
 git clone https://github.com/trusch/libbcrypt bcrypt
 cd bcrypt
 mkdir build
