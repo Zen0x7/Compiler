@@ -1,6 +1,6 @@
 name: Continuous Integration
 
-on: [push]
+on: [ push ]
 
 env:
   REGISTRY_IMAGE: ghcr.io/zen0x7/compiler
@@ -12,9 +12,9 @@ jobs:
       fail-fast: false
       matrix:
         version: [ "1.89.0", "1.88.0", "1.87.0" ]
-        variant: [debug, release]
-        type: [static, shared]
-        platform: [linux/amd64, linux/arm64]
+        variant: [ debug, release ]
+        type: [ static, shared ]
+        platform: [ linux/amd64, linux/arm64 ]
 
     runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-22.04-arm' || 'ubuntu-latest' }}
 
@@ -66,12 +66,17 @@ jobs:
         run: |
           mkdir -p ${{ runner.temp }}/digests
           digest="${{ steps.build.outputs.digest }}"
-          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+          if [ -z "$digest" ]; then
+            echo "No digest returned by build-push-action"
+            exit 1
+          fi
+          # guardamos fichero con nombre <sha-without-prefix>-<platform_pair>
+          echo "$digest" > "${{ runner.temp }}/digests/${digest#sha256:}-${{ env.PLATFORM_PAIR }}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}-${{ env.PLATFORM_PAIR }}
+          name: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -85,8 +90,8 @@ jobs:
       fail-fast: false
       matrix:
         version: [ "1.89.0", "1.88.0", "1.87.0" ]
-        variant: [debug, release]
-        type: [static, shared]
+        variant: [ debug, release ]
+        type: [ static, shared ]
 
     steps:
       - uses: actions/checkout@v4
@@ -95,8 +100,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/digests
-          pattern: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}-*
+          pattern: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}
           merge-multiple: true
+          if-no-files-found: error
+
+      - name: List downloaded digest files (debug)
+        run: |
+          echo "Contents of ${{ runner.temp }}/digests:"
+          ls -la "${{ runner.temp }}/digests" || true
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -114,31 +125,42 @@ jobs:
           REGISTRY_IMAGE: ${{ env.REGISTRY_IMAGE }}
         run: |
           set -euo pipefail
-
-          # tag que queremos crear para la tripleta (igual que en build)
+          
           TAG="${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}"
           echo "Creating manifest for tag: ${TAG}"
-
-          # recoger todos los archivos de digest que se descargaron (cada archivo está nombrado como <sha256-without-prefix>)
+          
           shopt -s nullglob
-          files=( digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}-* )
+          # ahora buscamos EXACTAMENTE los ficheros que se descargaron
+          files=( * )
           if [ "${#files[@]}" -eq 0 ]; then
-            echo "No digest files found for ${TAG} - aborting"
+            echo "No digest files found in $(pwd) - aborting"
+            ls -la
             exit 1
           fi
-
-          # construir lista de referencias repo@sha256:<digest>
+          
           refs=()
           for f in "${files[@]}"; do
-            digest_filename="$(basename "$f")"
-            # asumimos que el filename es el sha256 sin el prefijo "sha256:"
-            refs+=( "${REGISTRY_IMAGE}@sha256:${digest_filename}" )
+            # cada fichero es: <sha256-without-prefix>-<platform_pair>
+            echo "Found file: ${f}"
+            # extraer la parte del sha (todo antes del último '-')
+            # pero como los platform pair contienen '-', usamos un split inteligente:
+            # asumimos suffix '-linux-amd64' o '-linux-arm64' (convención que creaste)
+            # extraemos el sha tomando todo hasta la primera aparición de '-linux' (más robusto)
+            digest_part="${f%%-linux*}"
+            # fallback: si no coincide, intenta partir por último '-' y tomar la izquierda
+            if [ "$digest_part" = "$f" ]; then
+              digest_part="${f%-*}"
+            fi
+            # sanidad: que tenga longitud esperada (64 hex)
+            if ! echo "$digest_part" | grep -Eq '^[0-9a-f]{64}$'; then
+              echo "Warning: extracted digest '$digest_part' from file '$f' doesn't look like sha256"
+            fi
+            refs+=( "${REGISTRY_IMAGE}@sha256:${digest_part}" )
           done
-
-          # mostrar lo que vamos a crear (debug)
+          
           echo "Refs to include in manifest:"
           for r in "${refs[@]}"; do echo "  $r"; done
-
+          
           # crear manifest multi-arch y subir
           docker buildx imagetools create -t "${REGISTRY_IMAGE}:${TAG}" "${refs[@]}"
 
