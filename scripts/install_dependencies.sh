@@ -2,43 +2,49 @@
 set -e
 set -o pipefail
 
-apt update -qq
+apk update
 
-apt-get install -y -qq lsb-release \
-                       gnupg \
-                       git \
-                       wget \
-                       build-essential \
-                       cmake \
-                       gcc \
-                       make \
-                       apt-utils \
-                       zip \
-                       unzip \
-                       tzdata \
-                       libtool \
-                       automake \
-                       m4 \
-                       re2c \
-                       curl \
-                       supervisor \
-                       libssl-dev \
-                       zlib1g-dev \
-                       libcurl4-gnutls-dev \
-                       libprotobuf-dev \
-                       python3 \
-                       lcov \
-                       doxygen \
-                       graphviz \
-                       rsync \
-                       clang-format \
-                       gcovr
+apk add --no-cache \
+    alpine-sdk \
+    cmake \
+    git \
+    wget \
+    curl \
+    bash \
+    zip \
+    unzip \
+    tzdata \
+    libtool \
+    automake \
+    m4 \
+    re2c \
+    supervisor \
+    openssl-dev \
+    zlib-dev \
+    libcurl \
+    curl-dev \
+    protobuf-dev \
+    python3 \
+    doxygen \
+    graphviz \
+    rsync \
+    gcovr \
+    lcov \
+    autoconf
 
-ln -fs /usr/share/zoneinfo/$TZ /etc/localtime
-dpkg-reconfigure -f noninteractive tzdata
-apt-get clean
-apt-get autoclean
-apt-get autoremove
+if [ "$LINK" == "static" ]; then
+  apk add --no-cache \
+      zlib-static \
+      zstd-static \
+      curl-static \
+      openssl-libs-static \
+      nghttp2-dev \
+      nghttp2-static \
+      brotli-static \
+      libidn2-static \
+      libpsl-static \
+      libunistring-static
+fi
 
 #
 # Dotenv
