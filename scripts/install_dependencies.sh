@@ -60,7 +60,6 @@ git clone https://github.com/laserpants/dotenv-cpp.git dotenv
 cd dotenv/build
 cmake .. -DBUILD_DOCS=Off $DOTENV_BUILD_ARGS
 make install
-ldconfig
 cd ../..
 rm dotenv -Rf
 
@@ -81,6 +80,5 @@ cd build
 cmake .. $BCRYPT_BUILD_ARGS
 make -j4
 make install
-ldconfig
 cd ../..
 rm bcrypt -Rf
