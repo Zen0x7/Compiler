@@ -13,6 +13,7 @@ jobs:
       matrix:
         version: [ "1.89.0", "1.88.0", "1.87.0" ]
         variant: [debug, release]
+        type: [static, shared]
         platform: [linux/amd64, linux/arm64]
 
     runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-22.04-arm' || 'ubuntu-latest' }}
@@ -31,7 +32,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
-            type=raw,value=${{ matrix.version }}-${{ matrix.variant }}
+            type=raw,value=${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -55,6 +56,7 @@ jobs:
           build-args: |
             BOOST_VERSION=${{ matrix.version }}
             BOOST_VARIANT=${{ matrix.variant }}
+            LINK=${{ matrix.type }}
           tags: ${{ env.REGISTRY_IMAGE }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
@@ -70,7 +72,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ env.PLATFORM_PAIR }}
+          name: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}-${{ env.PLATFORM_PAIR }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -107,12 +109,18 @@ jobs:
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
-            type=raw,value=1.87.0-debug
-            type=raw,value=1.87.0-release
-            type=raw,value=1.88.0-debug
-            type=raw,value=1.88.0-release
-            type=raw,value=1.89.0-debug
-            type=raw,value=1.89.0-release
+            type=raw,value=1.87.0-static-debug
+            type=raw,value=1.87.0-shared-debug
+            type=raw,value=1.87.0-static-release
+            type=raw,value=1.87.0-shared-release
+            type=raw,value=1.88.0-static-debug
+            type=raw,value=1.88.0-shared-debug
+            type=raw,value=1.88.0-static-release
+            type=raw,value=1.88.0-shared-release
+            type=raw,value=1.89.0-static-debug
+            type=raw,value=1.89.0-shared-debug
+            type=raw,value=1.89.0-static-release
+            type=raw,value=1.89.0-shared-release
 
       - name: Create and push manifest
         working-directory: ${{ runner.temp }}/digests

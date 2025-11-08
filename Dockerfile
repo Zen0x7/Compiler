@@ -2,6 +2,7 @@ FROM debian:latest
 
 ARG BOOST_VERSION="1.89.0"
 ARG BOOST_VARIANT="release"
+ARG LINK="shared"
 
 ENV TZ="UTC" \
     DEBIAN_FRONTEND=noninteractive \
