@@ -76,7 +76,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}
+          name: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}-${{ env.PLATFORM_PAIR }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -100,7 +100,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/digests
-          pattern: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}
+          pattern: digests-${{ matrix.version }}-${{ matrix.variant }}-${{ matrix.type }}-*
           merge-multiple: true
           if-no-files-found: error
 
