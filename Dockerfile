@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ARG BOOST_VERSION="1.89.0"
 ARG BOOST_VARIANT="release"
-ARG LINK="shared"
+ARG LINK="static"
 
 ENV TZ="UTC" \
     TERM=xterm-256color \
