@@ -32,6 +32,7 @@ apk add --no-cache \
     lcov \
     autoconf \
     gnupg \
+    binutils \
     clang-extra-tools
 
 if [ "$LINK" == "static" ]; then
