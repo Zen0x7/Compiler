@@ -12,5 +12,5 @@ WORKDIR /srv
 COPY scripts/install_dependencies.sh install_dependencies.sh
 COPY scripts/install_boost.sh install_boost.sh
 
-RUN sh install_dependencies.sh \
-    && sh install_boost.sh
+#RUN sh install_dependencies.sh \
+#    && sh install_boost.sh
