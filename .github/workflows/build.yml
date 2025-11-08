@@ -59,7 +59,7 @@ jobs:
             LINK=${{ matrix.type }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name-canonical=true,push=true
           no-cache: true
 
       - name: Export digest
