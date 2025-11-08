@@ -30,7 +30,8 @@ apk add --no-cache \
     rsync \
     gcovr \
     lcov \
-    autoconf
+    autoconf \
+    clang-extra-tools
 
 if [ "$LINK" == "static" ]; then
   apk add --no-cache \
