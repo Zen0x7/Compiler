@@ -5,8 +5,7 @@ ARG BOOST_VARIANT="release"
 ARG LINK="static"
 
 ENV TZ="UTC" \
-    TERM=xterm-256color \
-    BOOST_ROOT="/srv/boost"
+    TERM=xterm-256color
 
 WORKDIR /srv
 
