@@ -40,6 +40,7 @@ apk add --no-cache \
     php-xml \
     php-json \
     php-curl \
+    php-dom \
     php-zip \
     php-intl \
     php-pdo_mysql \
