@@ -47,6 +47,7 @@ apk add --no-cache \
     php-mysqli \
     php-tokenizer \
     php-session \
+    php-xmlwriter \
     mariadb-client \
     gnupg \
     binutils
