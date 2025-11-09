@@ -32,18 +32,18 @@ apk add --no-cache \
     lcov \
     autoconf \
     clang-extra-tools \
-    php8 \
-    php8-cli \
-    php8-phar \
-    php8-opcache \
-    php8-mbstring \
-    php8-xml \
-    php8-json \
-    php8-curl \
-    php8-zip \
-    php8-intl \
-    php8-pdo_mysql \
-    php8-mysqli \
+    php \
+    php-cli \
+    php-phar \
+    php-opcache \
+    php-mbstring \
+    php-xml \
+    php-json \
+    php-curl \
+    php-zip \
+    php-intl \
+    php-pdo_mysql \
+    php-mysqli \
     mariadb-client \
     gnupg \
     binutils
