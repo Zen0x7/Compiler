@@ -44,7 +44,9 @@ apk add --no-cache \
     php8-intl \
     php8-pdo_mysql \
     php8-mysqli \
-    mariadb-client
+    mariadb-client \
+    gnupg \
+    binutils
 
 if [ "$LINK" == "static" ]; then
   apk add --no-cache \
