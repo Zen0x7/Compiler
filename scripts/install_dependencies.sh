@@ -31,7 +31,20 @@ apk add --no-cache \
     gcovr \
     lcov \
     autoconf \
-    clang-extra-tools
+    clang-extra-tools \
+    php8 \
+    php8-cli \
+    php8-phar \
+    php8-opcache \
+    php8-mbstring \
+    php8-xml \
+    php8-json \
+    php8-curl \
+    php8-zip \
+    php8-intl \
+    php8-pdo_mysql \
+    php8-mysqli \
+    mariadb-client
 
 if [ "$LINK" == "static" ]; then
   apk add --no-cache \
